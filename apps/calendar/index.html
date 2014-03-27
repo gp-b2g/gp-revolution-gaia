@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html class="ltr">
+<head>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+  <meta charset="utf-8">
+  <title>Calendar</title>
+  <link rel="stylesheet" type="text/css" href="/shared/style/headers.css">
+  <link rel="stylesheet" type="text/css" href="/shared/style_unstable/toolbars.css">
+  <link rel="stylesheet" type="text/css" href="/shared/style_unstable/tabs.css">
+  <link rel="stylesheet" type="text/css" href="/style/calendar.css">
+  <link rel="stylesheet" type="text/css" href="/style/ui.css">
+  <link rel="stylesheet" type="text/css" href="/style/day_views.css">
+  <link rel="stylesheet" type="text/css" href="/style/building_blocks.css">
+  <link rel="stylesheet" type="text/css" href="/style/first_time_use.css">
+
+  <!-- localization -->
+  <link rel="resource" type="application/l10n" href="/locales/locales.ini">
+  <link rel="resource" type="application/l10n" href="/shared/locales/date.ini">
+
+  <!--- shared scripts -->
+  <script defer src="/shared/js/l10n.js"></script>
+  <script defer src="/shared/js/gesture_detector.js"></script>
+  <script defer src="/shared/js/lazy_loader.js"></script>
+  <script defer src="/shared/js/l10n_date.js"></script>
+  <script defer src="/shared/js/notification_helper.js"></script>
+
+  <script defer src="/js/ext/page.js"></script>
+  <script defer src="/js/ext/uuid.js"></script>
+
+  <!-- lib root must load before anything else -->
+  <script defer src="/js/calendar.js"></script>
+
+  <!--- utils -->
+  <script defer src="/js/presets.js"></script>
+  <script defer src="/js/error.js"></script>
+  <script defer src="/js/calc.js"></script>
+  <script defer src="/js/template.js"></script>
+  <script defer src="/js/responder.js"></script>
+  <script defer src="/js/view.js"></script>
+  <script defer src="/js/router.js"></script>
+  <script defer src="/js/db.js"></script>
+  <script defer src="/js/timespan.js"></script>
+  <script defer src="/js/time_observer.js"></script>
+  <script defer src="/js/interval_tree.js"></script>
+
+  <!--- providers -->
+  <script defer src="/js/provider/abstract.js"></script>
+  <script defer src="/js/provider/local.js"></script>
+  <script defer src="/js/provider/caldav.js"></script>
+  <script defer src="/js/provider/caldav_pull_events.js"></script>
+
+  <!-- It's possible to lazy load these, but we include them here to reduce flickering -->
+  <script defer src="/js/views/calendar_colors.js"></script>
+  <script defer src="/js/views/time_header.js"></script>
+  <script defer src="/js/templates/month.js"></script>
+  <script defer src="/js/templates/day.js"></script>
+  <script defer src="/js/views/month_child.js"></script>
+  <script defer src="/js/utils/ordered_map.js"></script>
+  <script defer src="/js/utils/overlap.js"></script>
+  <script defer src="/js/views/time_parent.js"></script>
+  <script defer src="/js/views/day_based.js"></script>
+  <script defer src="/js/views/month.js"></script>
+  <script defer src="/js/views/day_child.js"></script>
+  <script defer src="/js/views/months_day.js"></script>
+
+  <!--- store -->
+  <script defer src="/js/store/abstract.js"></script>
+  <script defer src="/js/store/busytime.js"></script>
+  <script defer src="/js/store/account.js"></script>
+  <script defer src="/js/store/calendar.js"></script>
+  <script defer src="/js/store/event.js"></script>
+  <script defer src="/js/store/setting.js"></script>
+  <script defer src="/js/store/alarm.js"></script>
+  <script defer src="/js/store/ical_component.js"></script>
+  <script defer src="/js/event_mutations.js"></script>
+
+  <!--- models -->
+  <script defer src="/js/models/account.js"></script>
+  <script defer src="/js/models/calendar.js"></script>
+  <script defer src="/js/models/event.js"></script>
+
+  <!-- workers / main / controller -->
+  <script defer src="/js/worker/manager.js"></script>
+  <script defer src="/js/controllers/service.js"></script>
+  <script defer src="/js/controllers/error.js"></script>
+  <script defer src="/js/controllers/time.js"></script>
+  <script defer src="/js/controllers/sync.js"></script>
+  <script defer src="/js/controllers/alarm.js"></script>
+  <script defer src="/js/app.js"></script>
+
+  <link rel="import" href="/elements/errors.html">
+  <link rel="import" href="/elements/lazy_styles.html">
+  <link rel="import" href="/elements/advanced_settings.html">
+  <link rel="import" href="/elements/create_account.html">
+  <link rel="import" href="/elements/modify_account.html">
+  <link rel="import" href="/elements/modify_event.html">
+  <link rel="import" href="/elements/oauth.html">
+  <link rel="import" href="/elements/settings.html">
+  <link rel="import" href="/elements/show_event.html">
+</head>
+
+<body role="application" class="loading">
+
+<section is="lazy-styles" id="lazy-styles"></section>
+<section is="errors" id="errors" role="status"></section>
+<section is="settings" class="skin-dark" id="settings" role="region"></section>
+
+<section id="time-views" role="region">
+  <header id="time-header">
+    <button class="settings">
+      <span class="icon icon-menu">Show Settings</span>
+    </button>
+
+    <menu type="toolbar">
+      <a href="/event/add/">
+        <span data-l10n-id="new-event" class="icon icon-add" >
+          Add Event
+        </span>
+      </a>
+    </menu>
+
+    <h1 id="current-month-year">
+    </h1>
+  </header>
+
+  <div id="progress-indicator">
+    <div id="throbber"></div>
+  </div>
+
+  <div id="hint-swipe-to-navigate" class="hint hide">
+    <div class="hint-swipe-text">
+      <strong data-l10n-id="hint-swipe-action">Swipe</strong>
+      <span data-l10n-id="hint-swipe-to-navigate"> to navigate between calendar dates.</span>
+    </div>
+    <div class="hint-swipe-image"></div>
+  </div>
+
+  <section id="month-view">
+  </section>
+
+  <!---
+  When a day is selected you have
+  access to the details here
+  -->
+  <section id="months-day-view">
+    <section id="event-list" class="day-events">
+    </section>
+  </section>
+
+  <section id="day-view"></section>
+
+  <section id="week-view"></section>
+
+  <ul id="view-selector" role="tablist" data-type="filter" class="bottom" data-items="4">
+    <li class="today" role="tab"><a id="today" data-l10n-id="show-today" href="#today">Today</a></li>
+    <li class="month" role="tab"><a data-l10n-id="show-month-view" href="/month/">Month</a></li>
+    <li class="week" role="tab"><a data-l10n-id="show-week-view" href="/week/">Week</a></li>
+    <li class="day" role="tab"><a data-l10n-id="show-day-view" href="/day/">Day</a></li>
+  </ul>
+
+</section>
+
+<section is="create-account" class="fullscreen-view skin-organic" id="create-account-view" role="region"></section>
+<section is="advanced-settings" class="fullscreen-view in-progress skin-organic" role="region" id="advanced-settings-view"></section>
+<section is="modify-event" class="fullscreen-view" id="modify-event-view" role="region"></section>
+<section is="show-event" class="fullscreen-view" id="event-view" role="region"></section>
+<section is="oauth" class="fullscreen-view skin-dark" id="oauth2" role="region"></section>
+<section is="modify-account" class="fullscreen-view skin-organic" id="modify-account-view" role="region">
+
+</body>
+</html>
+

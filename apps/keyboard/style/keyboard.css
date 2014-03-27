@@ -1,0 +1,658 @@
+@font-face {
+  font-family: 'Keyboard Symbols';
+  font-weight: 600;
+  src: url('fonts/Keyboard-Symbols.woff');
+}
+
+html {
+  font-size: 10px;
+  pointer-events: none;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+button::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+
+.cache {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+  opacity: 0;
+  overflow: hidden;
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Keyboard */
+#keyboard {
+  position: absolute;
+  bottom: 0;
+  z-index: 15;
+  width: 100%;
+  border-top: 0.1rem solid #a1a5a8;
+  background-color: #606b6e;
+  pointer-events: auto;
+  visibility: visible;
+}
+
+#keyboard.hide {
+  visibility: hidden;
+}
+
+/* Row styles */
+.keyboard-row {
+  text-align: center;
+  font-size: 0;
+}
+.row1 {
+  background-color: #5b6668;
+}
+
+.row2 {
+  background-color: #566061;
+}
+
+.row3 {
+  background-color: #525c5e;
+}
+
+.row0 > .keyboard-key > .visual-wrapper > span {
+  border-right-color: #525b5e;
+}
+
+.row1 > .keyboard-key > .visual-wrapper > span {
+  border-right-color: #4c5657;
+}
+
+.row2 > .keyboard-key > .visual-wrapper > span {
+  border-right-color: #475052;
+}
+
+.row3 > .keyboard-key > .visual-wrapper > span {
+  border-right-color: #434b4d;
+}
+
+#keyboard.full-candidate-panel button.keyboard-key {
+  visibility: hidden;
+}
+
+/* Buttons: logic keys */
+.keyboard-key {
+  display: inline-block;
+  min-width: 2.6rem;
+  padding: 0;
+  font-size: 0;
+  font-family: sans-serif;
+  border: none;
+  background: none;
+}
+
+/* Visible keys */
+.keyboard-key > .visual-wrapper {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  height: 4.3rem;
+  margin: 0.4rem 0;
+}
+
+/* Standard key styles. */
+.keyboard-key > .visual-wrapper > span {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  color: #fff;
+  font-size: 2.4rem;
+  line-height: 4.3rem;
+  font-weight: normal;
+  text-align: center;
+  border-right: 0.1rem solid #525b5e;
+  border-left: 0.1rem solid transparent;
+}
+
+.keyboard-key:last-child > .visual-wrapper > span {
+  border-right: transparent;
+}
+
+.keyboard-key.highlighted > .visual-wrapper > span {
+  color: #00caf2;
+  background-color: #4a5255;
+  margin: -0.4rem 0 -0.4rem -0.1rem;
+  padding: 0.4rem 0 0 0.1rem;
+}
+
+.keyboard-key.highlighted > .visual-wrapper > span:after {
+  content: attr(data-label);
+  position: absolute;
+  top: -5.4rem;
+  left: calc(50% - 2.8rem);
+  width: 5.6rem;
+  height: 5.6rem;
+  color: #fff;
+  font-size: 2.8rem;
+  font-weight: medium;
+  line-height: 5.6rem;
+  border-radius: 50%;
+  background-color: #00aacc;
+}
+
+
+.keyboard-key.highlighted.kbr-menu-on > .visual-wrapper > span:after {
+  display: none;
+}
+
+.keyboard-row button:last-child.highlighted > .visual-wrapper > span:after {
+   left: -2.4rem;
+}
+
+.keyboard-row button:first-child.highlighted > .visual-wrapper > span:after {
+    left: 0rem;
+}
+
+
+
+/* Special keys */
+.keyboard-key.special-key > .visual-wrapper > span {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  color: #abb0b1;
+  font: 500 1.5rem/4.3rem 'Keyboard Symbols', sans-serif;
+}
+
+.keyboard-key.special-key.highlighted > .visual-wrapper > span:after {
+  font-size: 2.0rem;
+}
+
+
+/* Highlight for special keys */
+.keyboard-key.special-key.highlighted > .visual-wrapper > span {
+  color: #00b8d6;
+}
+
+.keyboard-key.special-key.highlighted > .visual-wrapper:before,
+.keyboard-key.special-key.highlighted > .visual-wrapper:after,
+.keyboard-key.special-key.highlighted > .visual-wrapper > span:after,
+.keyboard-key.highlighted[data-keycode="32"] > .visual-wrapper > span:after,
+#keyboard-accent-char-menu .keyboard-key > .visual-wrapper:before {
+  display: none;
+}
+
+
+/* For disabled keys */
+.keyboard-key.special-key[disabled="true"] {
+  /* Without this rule, the focus would lose when the user clicks this key.
+     This seems to be because a disabled key would not get touch/click event. */
+  pointer-events: none;
+}
+
+.keyboard-key.special-key[disabled="true"] > .visual-wrapper {
+  border-color: #535757;
+  background-color:  #585D5D;
+}
+
+.keyboard-key.special-key[disabled="true"] > .visual-wrapper > span {
+  color: #888;
+}
+
+/* Special keys - text */
+.keyboard-key.special-key.text > .visual-wrapper > span {
+  font-family: Sans-serif;
+}
+
+/* For keyboard layout menu*/
+.keyboard-key.special-key.highlighted.kbr-menu-on > .visual-wrapper:before,
+.keyboard-key.special-key.highlighted.kbr-menu-on > .visual-wrapper:after {
+  display: inherit;
+}
+
+.keyboard-key.special-key.highlighted.kbr-menu-on .visual-wrapper > span {
+  font-size: 0;
+}
+
+/* Key states */
+/* Active key, used for caps Lock key */
+.keyboard-key.kbr-key-active > .visual-wrapper > span,
+.keyboard-key.special-key.kbr-key-hold > .visual-wrapper > span {
+  color: #00caf2;
+}
+
+.keyboard-key.kbr-key-hold > .visual-wrapper {
+  box-shadow: 0 0.4rem 0 #00caf2;
+}
+
+
+/* Alt menu enabled */
+.keyboard-key.highlighted.kbr-menu-on > .visual-wrapper > span {
+  background: none;
+}
+
+.keyboard-key.highlighted.kbr-menu-on > .visual-wrapper > span:after {
+  display: none;
+}
+
+.keyboard-key.pinyin-ch-ellipsis > .visual-wrapper > span {
+  font-size: 1.6rem;
+}
+
+span.pinyin-toggle-button-small {
+  font-size: 70%;
+}
+
+/* Alternatives menu -- this menu appears when you tap and hold a key that has
+alternative special (accented) characters. The menu "grows" out of the key
+and displays the list of alternatives. */
+#keyboard-accent-char-menu {
+  display: none;
+  position: absolute;
+  top: -6rem;
+  height: 6rem;
+  font-size: 0;
+  border-radius: 3rem;
+  background-color: #00aacc;
+  overflow: hidden;
+  white-space: nowrap;
+  left: -1.2rem; /* because the first child is 1.2rem wider than others */
+}
+
+#keyboard-accent-char-menu.show {
+  display: block;
+}
+
+#keyboard-accent-char-menu.kbr-menu-left {
+  left: auto;
+  right: -1.2rem; /* because the last child is 1.2rem wider than others */
+}
+
+/* Non keyboard key styles in menu */
+#keyboard-accent-char-menu .keyboard-key {
+  min-width: 3rem;
+}
+
+/* if it is the first or last key in the accent menu make it wider */
+#keyboard-accent-char-menu .keyboard-key:first-child,
+#keyboard-accent-char-menu .keyboard-key:last-child {
+  min-width: 4.2rem;
+}
+
+/*
+ * If it is the first and the last key in the accent menu, it means that
+ * there is only one and we need to make it wider still so we get a round
+ * menu
+ */
+#keyboard-accent-char-menu .keyboard-key:first-child:last-child {
+  min-width: 6rem;
+}
+
+#keyboard-accent-char-menu .keyboard-key > .visual-wrapper {
+  height: 6rem;
+  margin: 0;
+  border-right: 1px solid #0099b8;
+}
+
+#keyboard-accent-char-menu .keyboard-key > .visual-wrapper span {
+  background: none;
+  border-radius: 0;
+}
+
+#keyboard-accent-char-menu .keyboard-key.highlighted > .visual-wrapper:after,
+#keyboard-accent-char-menu .keyboard-key.highlighted > .visual-wrapper > span:after {
+  display: none;
+}
+
+/* Styles for keys in accent menu (not highlighted). */
+#keyboard-accent-char-menu .keyboard-key > .visual-wrapper > span {
+  border: none;
+  line-height: 6rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+#keyboard-accent-char-menu .keyboard-key:first-child > .visual-wrapper > span {
+  padding-left: 0.5rem;
+}
+
+#keyboard-accent-char-menu .keyboard-key:last-child > .visual-wrapper > span {
+  padding-right: 0.5rem;
+}
+
+/* Highlighted special accent characters. These keys appear in the popover
+bubble above the key when you tap and hold. */
+#keyboard-accent-char-menu .keyboard-key.highlighted > .visual-wrapper > span {
+  background-color: #0099b8;
+}
+
+
+#keyboard-accent-char-menu > .keyboard-key:last-child .visual-wrapper {
+  border: none;
+}
+
+/* IMEs */
+#keyboard-pending-symbol-panel {
+  position: absolute;
+  top: -3.5rem;
+  left: 0;
+  height: 3.2rem;
+  line-height: 3.2rem;
+  font-size: 2.4rem;
+  width: auto;
+  padding: 0 0.8rem;
+  background: rgba(245, 245, 245, 0.7);
+  color: rgb(36, 36, 36);
+  border-top: 0.1rem solid #d5d5d5;
+  border-right: 0.1rem solid #d5d5d5;
+  white-space: nowrap;
+}
+
+#keyboard-pending-symbol-panel:empty {
+  display: none;
+}
+
+#keyboard.full-candidate-panel {
+  padding-top: 3.4rem;
+}
+
+#keyboard-candidate-panel {
+  display: block;
+  background: #252220;
+  padding: 0;
+  margin: -0.6rem 0rem 0.2rem 0rem;
+  border: none;
+  border-top: 0.1rem solid #000000;
+  border-bottom: 0.1rem solid #000000;
+  height: 2.8rem;
+  width: 100%;
+  overflow: hidden;
+  white-space: normal;
+}
+
+#keyboard.full-candidate-panel #keyboard-candidate-panel {
+  overflow-y: auto;
+
+  position: absolute;
+  top: 0.2rem;
+  height: -moz-calc(100% - 0.4rem);
+  z-index: 1;
+  margin: 0;
+}
+
+#keyboard-candidate-panel-toggle-button {
+  display: none;
+  z-index: 1;
+  position: absolute;
+  right: 0rem;
+  top: 0.25rem;
+  font-size: 0;
+  height: 2.8rem;
+  background: #252220 url('images/icon_extend.png') center center no-repeat;
+  background-size: 2.4rem;
+}
+
+#keyboard.full-candidate-panel #keyboard-candidate-panel-toggle-button {
+  background-image: url('images/icon_close.png');
+}
+
+#keyboard-candidate-panel .candidate-row {
+  border-top: 0.1rem solid #000000;
+}
+
+#keyboard-candidate-panel .candidate-row-first {
+  border-top: none;
+}
+
+#keyboard.candidate-panel #keyboard-candidate-panel .candidate-row {
+  display: none;
+}
+
+#keyboard.candidate-panel #keyboard-candidate-panel .candidate-row-first {
+  display: block;
+}
+
+#keyboard-candidate-panel-toggle-button.highlighted,
+#keyboard-candidate-panel .candidate-row span.highlighted {
+  background-color: #008eab;
+  color: #333333;
+}
+
+#keyboard-candidate-panel .candidate-row span {
+  display: inline-block;
+  margin: 0;
+  padding: 0 2px 0 0;
+  min-width: -moz-calc(4rem - 2px);
+  height: 2.8rem;
+  font-size: 2rem;
+  color: #a6a6a6;
+  text-align: center;
+  line-height: 2.8rem;
+  background: transparent url('images/divider.png') right center no-repeat;
+  background-size: auto 10rem;
+  border: none;
+}
+
+/* for latin suggestions we don't need such a tall box */
+/* and in latin we hide the toggle button, so we can be full-width */
+#keyboard.candidate-panel #keyboard-candidate-panel.latin {
+  display: block;
+  white-space: nowrap;
+  height: 3rem;
+  width: 100%;
+  background: #333;
+  margin: -0.6rem 0rem 0rem 0rem; /* I don't know why we need the top margin */
+  border: none;
+  border-bottom: 0.1rem solid #a0a6a8;
+  overflow: hidden;
+}
+
+#keyboard.full-candidate-panel #keyboard-candidate-panel[data-truncated]::after {
+  content: '…';
+  background: none ! important;
+  border-color: transparent ! important;
+
+  display: block;
+  text-align: center;
+  margin: 0;
+  height: 2.8rem;
+  font-size: 2rem;
+  color: #a6a6a6;
+  line-height: 2.8rem;
+}
+
+
+#keyboard-candidate-panel.latin > div {
+  display: inline-block;
+  height: 100%;       /* width set in render.js */
+  margin: 0 3px;      /* px instead of rem because we use this in render.js */
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  -moz-box-sizing: border-box;
+}
+
+#keyboard-candidate-panel.latin span {
+  /*
+   * We start inline, so we can measure the length of the text, and then
+   * convert (in render.js) to inline-block so we can transform the text
+   * and make it fit.
+   */
+  display: inline;
+  font-size: 2.0rem;
+  font-weight: normal;
+  line-height: 3rem;
+  height: 3rem;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: none;
+  color: #fff;
+  text-align: center;
+}
+
+#keyboard-candidate-panel.latin span.autocorrect {
+  color: #0ac;
+}
+
+/*
+ * Don't display the toggle button for latin suggestions.
+ * For now, at least, we only ever get 3 at a time
+ */
+#keyboard.candidate-panel #keyboard-candidate-panel-toggle-button.latin {
+  display: none;
+}
+
+#keyboard-candidate-panel span[data-active],
+#keyboard-candidate-panel-toggle-button[data-active] {
+  background: -moz-linear-gradient(bottom, rgb(191,191,183) 10%, rgb(161,158,153) 90%);
+}
+
+/* Pending panel highlight */
+.keyboard-pending-symbols-highlight-green {
+  background: #33aa33;
+}
+
+.keyboard-pending-symbols-highlight-red {
+  background: #aa3333;
+}
+
+.keyboard-pending-symbols-highlight-blue {
+  background: #3333aa;
+}
+
+/* A note to show on the key to indicate the alternative char */
+.alt-note {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  color: #a6a6a6;
+  font: 1.6rem/1.6rem "Keyboard Symbols", sans-serif;
+}
+
+.keyboard-key.highlighted  .alt-note {
+  visibility: hidden;
+}
+
+.keyboard-key.big-key > .visual-wrapper span {
+  font-size: 3rem;
+  font-weight: normal;
+  color: #fff;
+}
+
+.keyboard-key.big-key .visual-wrapper .alt-note {
+    width: 100%;
+    text-align: center;
+    margin-top: 1.5rem;
+    text-indent: 4rem;
+}
+
+.keyboard-key.big-key.highlighted .alt-note {
+  visibility: visible;
+}
+
+/* Increase tap area for first / last keys in a row that
+  doesn't fill full width */
+.keyboard-key.float-key-first {
+  text-align: right;
+}
+.keyboard-key.float-key-last {
+  text-align: left;
+}
+
+/* For FTU tip dialog */
+#confirm-dialog {
+  pointer-events: auto;
+  text-align: center;
+}
+
+#confirm-dialog .tip-section {
+  background-position: center center;
+  display: inline-block;
+  height: 31rem;
+}
+
+@media (orientation:landscape) {
+  #confirm-dialog .tip-section {
+    background: url(images/ftu_keyboard_landscape.png) no-repeat top left;
+    width:47rem;
+  }
+  #keyboard.landscape .keyboard-key > .visual-wrapper > span {
+    font-size: 2.8rem
+  }
+
+  #keyboard.landscape .keyboard-key.special-key > .visual-wrapper > span {
+    font: 500 2.1rem/4.3rem 'Keyboard Symbols', sans-serif;
+  }
+
+  #keyboard.landscape .keyboard-key.highlighted > .visual-wrapper > span:after {
+      top: -7rem;
+      left: calc(50% - 3.5rem);
+      width: 7rem;
+      height: 7rem;
+      line-height: 7rem;
+      font-size: 3.5rem
+  }
+}
+
+@media (orientation:portrait) {
+  #confirm-dialog .tip-section {
+    background: url(images/ftu_keyboard.png) no-repeat top left;
+    width:28.9rem;
+  }
+}
+
+@media (min-width:768px) and (orientation:landscape) {
+  #confirm-dialog .tip-section {
+    width: 35rem;
+    height: 23rem;
+  }
+}
+
+@media (min-width:768px) and (orientation:portrait) {
+  #confirm-dialog .tip-section {
+    width: 23rem;
+    height: 25rem;
+  }
+}
+
+#confirm-dialog button.recommend.active {
+  border-color: #008aaa;
+  background: #008aaa;
+  color: #333;
+}
+
+/*
+ * Styles for the dismiss suggestions button in the candidate panel
+ */
+
+#keyboard-candidate-panel.latin > #dismiss-suggestions-button {
+  display:inline-block;
+  height: 100%;
+  /*
+   * the icon is 2.4rem wide but the visual space only takes up 1.4rem
+   * we want 10 blank pixels to the left and 15 to the right. But the first
+   * suggestion has a 0.3rem margin, so we only need to add 1.2rem to the
+   * icon size.
+   */
+  width: 3.6rem;
+  background: url('images/icon_dismiss.png') 0.5rem center /2.4rem no-repeat;
+  margin: 0;
+  padding: 0;
+}
+
+/* Bangla Probhat */
+.keyboard-key > .visual-wrapper > span[data-label="ো"] {
+  font-size: 1.6rem;
+}
+
+.keyboard-key > .visual-wrapper > span[data-label="া"] {
+  font-size: 1.7rem;
+}

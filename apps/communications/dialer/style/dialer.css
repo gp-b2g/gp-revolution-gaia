@@ -1,0 +1,152 @@
+html {
+  font-size: 10px;
+}
+
+html,body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  color: white;
+  background-color: black;
+}
+
+#call-log-view > div {
+  background-color: white;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+a {
+  outline: 0;
+}
+
+a:hover, a:active, a:focus {
+  outline: 0;
+}
+
+.hide {
+  display: none !important;
+}
+
+.contact-primary-info {
+  font-size: -moz-calc(15*0.226rem);
+  color: black;
+}
+
+.contact-secondary-info {
+  font-size: -moz-calc(6*0.226rem);
+  color: white;
+}
+
+.grid-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.grid-v-align {
+  vertical-align: middle;
+}
+
+.grid-row {
+  display: table-row;
+}
+
+.grid-cell {
+  display: table-cell;
+}
+
+.grid {
+  display: table;
+  table-layout: fixed;
+}
+
+.center {
+  text-align: center;
+}
+
+body.hidden *[data-l10n-id] {
+  visibility: hidden;
+}
+
+/* Structure for toolbar*/
+
+.icon-recents:after {
+  background-image: url("images/recents.png") !important;
+  background-size: 3rem !important;
+}
+
+.icon-contacts:after {
+  background-image: url("images/contacts.png") !important;
+  background-size: 3rem !important;
+}
+
+.icon-keypad:after {
+  background-image: url("images/dialpad.png") !important;
+  background-size: 3rem !important;
+}
+
+.with-keyboard #views, .with-keyboard #contacts-view,
+.with-keyboard [role="tablist"] [role="tabpanel"] {
+  height: 100% !important;
+}
+
+.with-keyboard [role="tablist"] [role="tab"] > a {
+  display: none;
+}
+
+/* Making lazy loading look nice */
+#contacts-view [role="tabpanel"],
+#recents-view.hidden [role="tabpanel"] {
+  background-color: white;
+}
+
+#contacts-view [role="tabpanel"]:before,
+#recents-view.hidden [role="tabpanel"]:before {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 5rem;
+
+  background-color: #F97C17;
+  content: "";
+}
+
+#iframe-contacts-container {
+  overflow: hidden;
+}
+
+#iframe-contacts {
+  position: absolute;
+}
+
+#recents-view.hidden [role="tabpanel"] section {
+  display:none;
+}
+
+.no-opacity {
+  opacity: 0 !important;
+}
+
+/* For showing/hiding navbar */
+article[role="tab"] > .icon {
+  transform: translateY(0%);
+  z-index: 2;
+  transition: 0.5s transform 0.5s;
+}
+
+#views.hide-toolbar > article[role="tab"] > .icon {
+  transform: translateY(100%);
+  pointer-events: none;
+}
+
+#views [role="tabpanel"] {
+  transition: 1s height step-end;
+}
+
+#views.hide-toolbar [role="tabpanel"] {
+  height: 100%;
+  transition: none;
+}
